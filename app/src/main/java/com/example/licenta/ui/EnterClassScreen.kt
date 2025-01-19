@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.lazy.rememberLazyListState
+
 @Composable
 fun EnterClassScreen(viewModel: ScheduleViewModel = viewModel()) {
     var classId by remember { mutableStateOf("") }
@@ -39,9 +40,7 @@ fun EnterClassScreen(viewModel: ScheduleViewModel = viewModel()) {
             .background(backgroundColor)
     ) {
         when {
-
             schedule == null -> {
-
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -49,11 +48,10 @@ fun EnterClassScreen(viewModel: ScheduleViewModel = viewModel()) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Top
                 ) {
-                    // Titlul de ghidare
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
-                        text = "Please enter the Class ID",
+                        text = "Please enter the Class Name",
                         color = accentColor,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
@@ -63,7 +61,6 @@ fun EnterClassScreen(viewModel: ScheduleViewModel = viewModel()) {
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // Câmp pentru introducerea ID-ului clasei
                     OutlinedTextField(
                         value = classId,
                         onValueChange = { classId = it },
@@ -78,15 +75,20 @@ fun EnterClassScreen(viewModel: ScheduleViewModel = viewModel()) {
                         ),
                         singleLine = true,
                         placeholder = {
-                            Text("Class ID", fontSize = 12.sp, color = grayText)
+                            Text("Class Name", fontSize = 12.sp, color = grayText)
                         }
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Buton pentru confirmare
                     Button(
-                        onClick = { viewModel.fetchSchedulesForClass(classId.toLongOrNull() ?: -1) },
+                        onClick = {
+                            if (classId.isNotBlank()) {
+                                viewModel.fetchSchedulesForTomorrow(classId)
+                            } else {
+                                println("Class ID cannot be empty")
+                            }
+                        },
                         modifier = Modifier
                             .width(80.dp)
                             .height(32.dp),
@@ -116,7 +118,6 @@ fun EnterClassScreen(viewModel: ScheduleViewModel = viewModel()) {
                 Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    // Titlul "Today's Classes"
                     if (showTitle) {
                         Column(
                             modifier = Modifier
@@ -141,7 +142,6 @@ fun EnterClassScreen(viewModel: ScheduleViewModel = viewModel()) {
                         }
                     }
 
-                    // Lista de ore
                     LazyColumn(
                         state = listState,
                         modifier = Modifier
@@ -186,7 +186,6 @@ fun EnterClassScreen(viewModel: ScheduleViewModel = viewModel()) {
                             }
                         }
 
-                        // Spacer pentru spațiu gol la final
                         item {
                             Spacer(modifier = Modifier.height(30.dp))
                         }
@@ -194,16 +193,5 @@ fun EnterClassScreen(viewModel: ScheduleViewModel = viewModel()) {
                 }
             }
         }
-    }
-}
-
-
-
-private fun processClassId(classId: String, onValidClassId: (Long) -> Unit) {
-    try {
-        val id = classId.toLong()
-        onValidClassId(id)
-    } catch (e: NumberFormatException) {
-        println("Invalid Class ID: $classId")
     }
 }

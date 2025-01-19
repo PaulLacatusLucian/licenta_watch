@@ -10,10 +10,22 @@ class ScheduleViewModel : ViewModel() {
     private val _schedule = MutableStateFlow<List<ScheduleItem>?>(null)
     val schedule: StateFlow<List<ScheduleItem>?> get() = _schedule
 
-    fun fetchSchedulesForClass(classId: Long) {
+    fun fetchSchedulesForToday(className: String) {
         viewModelScope.launch {
             try {
-                val response = RetrofitInstance.api.getSchedule(classId)
+                val response = RetrofitInstance.api.getTodaySchedule(className)
+                _schedule.value = response // Stocăm răspunsul complet
+            } catch (e: Exception) {
+                println("Eroare: ${e.message}")
+                _schedule.value = emptyList() // Returnăm o listă goală în caz de eroare
+            }
+        }
+    }
+
+    fun fetchSchedulesForTomorrow(className: String) {
+        viewModelScope.launch {
+            try {
+                val response = RetrofitInstance.api.getTomorrowSchedule(className)
                 _schedule.value = response // Stocăm răspunsul complet
             } catch (e: Exception) {
                 println("Eroare: ${e.message}")
@@ -22,4 +34,3 @@ class ScheduleViewModel : ViewModel() {
         }
     }
 }
-
