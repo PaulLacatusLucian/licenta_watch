@@ -6,5 +6,5 @@ data class ScheduleItem(
     val startTime: String,
     val endTime: String,
     val subjects: List<String>,
-    val teacher: Teacher
+    val teacher: Teacher?
 )
